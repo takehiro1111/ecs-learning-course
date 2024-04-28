@@ -44,11 +44,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       - name: Push the image to Amazon ECR
         env:
-          ECR_REGISTORY: ${{ steps.login-ecr.outputs.repository}} 
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry}} 
           # Login to ECRの結果の中の'repository'の値を参照する
         run: |
-          docker image tag temp_api_image:latest $ECR_REGISTORY/$ECR_REPOSITORY:${{ github.sha }}
+          docker image tag temp_api_image:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
         # docker image tag temp_api_image:latest {アカウントID}.dkr.ecr.ap-northeast-1.amazonaws.com/my-app-api:{sha}
-          docker image push $ECR_REGISTORY/$ECR_REPOSITORY:${{ github.sha }}
+          docker image push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
 
 # Deploy
