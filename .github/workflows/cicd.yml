@@ -24,7 +24,7 @@ permissions:
 #     runs-on: ubuntu-latest
 #     defaults:
 #       run:
-#         working-directory: cicd-section-api
+#         working-directory: cicd-section/api
 #     steps:
 #       # Checkout code
 #       - uses: actions/checkout@v4
@@ -51,7 +51,6 @@ permissions:
 #         # docker image tag temp_api_image:latest アカウントID.dkr.ecr.ap-northeast-1.amazonaws.com/my-app-api:sha
 #           docker image push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
 
-# Deploy
 jobs:
   # Test/Build
   test-and-build:
@@ -83,3 +82,5 @@ jobs:
         run: |
           docker image tag temp_api_image:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
           docker image push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+
+# Deploy
