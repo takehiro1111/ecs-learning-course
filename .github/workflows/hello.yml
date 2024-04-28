@@ -1,0 +1,14 @@
+name: Hello GIthub Actions HandsON #ワークフローの名前を指定
+
+on: [push,fork,pull_request]  #トリガーとなるイベントを定義
+
+jobs:
+  hello-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello"
+      - run: echo "Github Actions!!"
+  gooodbye-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Goodbye,Github Actions."
