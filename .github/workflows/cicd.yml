@@ -40,7 +40,7 @@ jobs:
           role-to-assume: ${{secrets.AWS_ROLE_TO_ASSUME}} #後で確認予定
 
       - name: Login to ECR
-        id: lofin-ecr
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
       
       - name: Push the image to Amazon ECR
