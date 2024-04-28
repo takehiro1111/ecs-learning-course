@@ -36,12 +36,13 @@ jobs:
       - name: Configure AWS Credentials OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{AWS_REGION}}
+          aws-region: ${{env.AWS_REGION}}
           role-to-assume: ${{secrets.AWS_ROLE_TO_ASSUME}} #後で確認予定
 
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Push the image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry}} 
