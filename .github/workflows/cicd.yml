@@ -55,8 +55,8 @@ jobs:
         with:
           name: api-image-uri
           path: cicd-section/api/api-image-uri.txt
-
 # docker image tag temp_api_image:latest アカウントID.dkr.ecr.ap-northeast-1.amazonaws.com/my-app-api:sha
+
 
 # Deploy
   deploy:
