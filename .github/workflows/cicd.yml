@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/**'
-      - 'cicd-section/api/**'
+      - 'cicd-section/**'
   workflow_dispatch:
 
 env:
