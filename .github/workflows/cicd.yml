@@ -9,7 +9,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-1
-  ECS_CLUSTER: my-app-cluster
+  ECS_CLUSTER: cluster-test1
   ECS_SERVICE: my-app-api
   ECS_TASK_DEFINITION_API: cicd-section/.aws/task-def-api.json
   ECR_REPOSITORY: my-app-api
@@ -49,7 +49,7 @@ jobs:
         run: | 
           docker image tag temp_api_image:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
           docker image push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
-          echo $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} > api_image_uri.txt
+          echo $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} > api-image-uri.txt
       
       - name: upload the Artifact
         uses: actions/upload-artifact@v2
