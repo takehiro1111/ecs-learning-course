@@ -9,9 +9,9 @@ on:
 env:
   AWS_REGION: ap-northeast-1
   ECS_CLUSTER: cluster-test1
-  ECS_SERVICE: my-app-api
+  ECS_SERVICE: test-actions-deploy
   ECS_TASK_DEFINITION_API: cicd-section/.aws/task-def-api.json
-  ECR_REPOSITORY: my-app-api
+  ECR_REPOSITORY: actions-deploy
 
 permissions:
   id-token: write
@@ -22,38 +22,40 @@ jobs:
   test-and-build:
     runs-on: ubuntu-latest
     defaults:
+# GitHub Actions のランナー内のディレクトリ構成は、actions/checkout アクションを使用してリポジトリの内容をダウンロードした後、
+# GitHub リポジトリのディレクトリ構成を反映しています。
+# 'actions/checkout@v4'の機能でリポジトリのディレクトリ構造がそのままランナーに再現されます。
       run:
-        working-directory: cicd-section/api
+        working-directory: cicd-section/api #GHAのランナーの中のディレクトリを指定
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # - name: Run Test execution
-      #   run: |
-          
-
+      # https://github.com/aws-actions/configure-aws-credentials
       - name: Configure AWS Credentials OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
+      # https://github.com/aws-actions/amazon-ecr-login
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         
       - name: Push the image to Amazon ECR
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}  # Login to ECRの結果の中の'repository'の値を参照する
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}  # 'Login to Amazon ECR'の結果の中の'repository'の値を参照する
           # docker image tag temp_api_image:latest アカウントID.dkr.ecr.ap-northeast-1.amazonaws.com/my-app-api:sha
         run: | 
           docker image build -t temp_api_image:latest .
           docker image tag temp_api_image:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
           docker image push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
           echo $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} > api-image-uri.txt
-      
+
+        # https://github.com/actions/upload-artifact
       - name: upload the Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: api-image-uri
           path: cicd-section/api/api-image-uri.txt
@@ -73,16 +75,18 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
+        # https://github.com/actions/download-artifact
       - name: Download the Artifact
         uses: actions/download-artifact@v2
         with:
           name: api-image-uri
-          path: artifacts
+          path: download/artifacts #ランナーの中でダウンロード先のディレクトリが動的に作成される。 
 
       - name: Define the image URI
         run: | 
-          echo "API_IMAGE_URI=$(cat artifacts/api-image-uri.txt)" >> $GITHUB_ENV
-      
+          echo "API_IMAGE_URI=$(cat download/artifacts/api-image-uri.txt)" >> $GITHUB_ENV
+          
+        # https://github.com/aws-actions/amazon-ecs-render-task-definition
       - name: Fill in the new image URI in the amazon ECS task definition
         id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -91,10 +95,11 @@ jobs:
           container-name: api
           image: ${{ env.API_IMAGE_URI }}
         
+        #  https://github.com/aws-actions/amazon-ecs-deploy-task-definition
       - name: Deploy ECS task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-servce-stability: true
+          wait-for-serivce-stability: true # ECSタスクが安定的に起動状態になるまでワークフローを待機する。
