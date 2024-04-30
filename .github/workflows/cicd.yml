@@ -80,11 +80,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: api-image-uri
-          path: download/artifacts #ランナーの中でダウンロード先のディレクトリが動的に作成される。 
+          path: artifacts #ランナーの中でダウンロード先のディレクトリが動的に作成される。 
 
       - name: Define the image URI
         run: | 
-          echo "API_IMAGE_URI=$(cat download/artifacts/api-image-uri.txt)" >> $GITHUB_ENV
+          echo "API_IMAGE_URI=$(cat artifacts/api-image-uri.txt)" >> $GITHUB_ENV
           
         # https://github.com/aws-actions/amazon-ecs-render-task-definition
       - name: Fill in the new image URI in the amazon ECS task definition
