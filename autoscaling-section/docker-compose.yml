@@ -19,7 +19,7 @@ services:
     command: LoadTest.js
     working_dir: /workspace
     volumes:
-      - ./k6:/workspace
+      - ./k6:/workspace # バインドマウント
     depends_on:
       encryptor:
         condition: service_healthy

@@ -7,6 +7,6 @@ export const options = {
 };
 
 export default function () {
-    http.get('http://encryptor:8080/api/encryptor');
+    http.get('http://my-app-autoscalling-alb-2135000384.ap-northeast-1.elb.amazonaws.com:8080/api/encryptor');
     sleep(1);
 }

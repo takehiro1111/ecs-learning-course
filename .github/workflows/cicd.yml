@@ -77,7 +77,7 @@ jobs:
 
         # https://github.com/actions/download-artifact
       - name: Download the Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4 # uploadと同じバージョン(v4),nameを指定しないとエラーになるので注意。
         with:
           name: api-image-uri
           path: download/artifacts #ランナーの中でダウンロード先のディレクトリが動的に作成される。 
